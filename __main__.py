@@ -1,3 +1,4 @@
+import os
 import argparse
 import sys
 import pathlib
@@ -8,8 +9,10 @@ import logging
 import grpc
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
-import PythonServer_pb2
-import PythonServer_pb2_grpc
+sys.path.append(os.path.dirname(__file__))
+
+import dsws_pb2
+import dsws_pb2_grpc
 
 def main():
     parser = argparse.ArgumentParser()
@@ -33,20 +36,20 @@ def main():
                                     ('grpc.enable_retries', 0),
                                     ('grpc.keepalive_timeout_ms', 10000)
                                     ]) as channel:
-        stub = PythonServer_pb2_grpc.EventServerStub(channel)
+        stub = dsws_pb2_grpc.EventServerStub(channel)
 
         if args.location:
             # Timeout in seconds.
             # Please refer gRPC Python documents for more detail. https://grpc.io/grpc/python/grpc.html
             response = stub.NotifyLocationEvent(
-                PythonServer_pb2.LocationEvent(
+                dsws_pb2.LocationEvent(
                     Location=args.location, 
                     MeasType=args.measurement,
                     MeasValue=args.value),
                 timeout=10)
         else:
             response = stub.NotifySensorEvent(
-                PythonServer_pb2.SensorEvent(
+                dsws_pb2.SensorEvent(
                     Sensor=args.sensor, 
                     MeasType=args.measurement,
                     MeasValue=args.value),
